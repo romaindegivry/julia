@@ -1005,6 +1005,23 @@ end
 
 Experimental.register_error_hint(string_concatenation_hint_handler, MethodError)
 
+# Display a hint in case the user writes an array comprehension when trying to index into an array.
+function array_typed_hcat_hint_handler(io, ex, arg_types, kwargs)
+    @nospecialize
+    if (ex.f === Base.typed_hcat) && length(arg_types) > 0 && (first(arg_types) <: Base.AbstractArray)
+        print(io,
+            "\n Hint: If attempting to index into an array, missing or ambiguous operator placement causes this error.\n\n Use ")
+        printstyled(io, "vec[i+1]", color=:cyan)
+	print(io, " rather than ")
+	printstyled(io, "vec[i 1]", color=:cyan)
+	print(io, " (missing operator) or ")
+	printstyled(io, "vec[i +1]", color=:cyan)
+	print(io, " (ambiguous).")
+    end
+end
+
+Experimental.register_error_hint(array_typed_hcat_hint_handler, MethodError)
+
 # ExceptionStack implementation
 size(s::ExceptionStack) = size(s.stack)
 getindex(s::ExceptionStack, i::Int) = s.stack[i]
