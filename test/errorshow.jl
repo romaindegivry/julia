@@ -941,6 +941,12 @@ let err_str
     @test occursin("String concatenation is performed with *", err_str)
 end
 
+let err_str
+    vec = [1 2 3]
+    err_str = @except_str vec[1 +1] MethodError
+    @test occursin("If attempting to index into an array, missing or ambiguous operator placement may cause this.",err_str)
+end
+
 @testset "unused argument names" begin
     g(::Int) = backtrace()
     bt = g(1)
